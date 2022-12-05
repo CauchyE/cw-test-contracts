@@ -1,0 +1,2 @@
+CHAIN_ID="osmo-testing"
+NODE="http://localhost:26653"
