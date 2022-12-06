@@ -16,15 +16,23 @@ pub enum Slipage {
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum ExecuteMsg {
-    Swap {
-        input_coin: Coin,
-        output_denom: String,
-        slipage: Slipage,
+    // let the contract send a MsgJoinSwapExternAmountIn to join a single
+    // token into a pool with one msg
+    JoinSwapExtern {
+        pool_id: u64,
+        token_in: Coin,
+        share_our_min_amount: String,
+        // slipage: Slipage,
     },
-    // JoinPool {
-    //     pool: Uint64,
-    //     share_min_out: Uint128,
-    // },
+    // let the contract send a MsgExitSwapExternAmountOut to exit a single
+    // token from a pool with one msg
+    // ExitSwapShare {
+        // pool_id: u64,
+        // token_out_denom: String,
+        // share_in_amount: String,
+        // token-out-min-amount: String,
+    // }
+
     // Deposit {
     //     pool: Uint64,
     //     share_min_out: Uint128,
