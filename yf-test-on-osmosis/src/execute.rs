@@ -9,7 +9,7 @@ use cosmwasm_std::{
 // use crate::contract::SWAP_REPLY_ID;
 use crate::error::ContractError;
 use crate::helpers::{
-   generate_join_swap_extern_msg,
+   generate_join_swap_extern_msg, generate_exit_swap_share_amount_in,
 };
 // use crate::msg::Slipage;
 
@@ -27,42 +27,41 @@ pub fn execute_join_swap_extern(
         return Err(ContractError::InsufficientFunds {});
     }
 
-    // let min_output_token = match slipage {
-    //     Slipage::MaxSlipagePercentage(percentage) => calculate_min_output_from_twap(
-    //         deps.as_ref(),
-    //         input_token.clone(),
-    //         output_denom,
-    //         env.block.time,
-    //         percentage,
-    //     )?,
-    //     Slipage::MinOutputAmount(minimum_output_amount) => {
-    //         coin(minimum_output_amount.u128(), output_denom)
-    //     }
-    // };
-
-    // generate the swap_msg
-    let swap_msg = generate_join_swap_extern_msg(
-        deps.as_ref(),
+    // generate the join_swap_extern_amount_in_msg
+    let join_swap_extern_amount_in_msg = generate_join_swap_extern_msg(
         env.contract.address,
         pool_id,
         token_in,
         share_out_min_amount,
     )?;
 
-    // // save intermediate state for reply
-    // SWAP_REPLY_STATES.save(
-    //     deps.storage,
-    //     SWAP_REPLY_ID,
-    //     &SwapMsgReplyState {
-    //         original_sender: info.sender,
-    //         swap_msg: swap_msg.clone(),
-    //     },
-    // )?;
-
     // TODO: Should we handle the error here?
     Ok(Response::new()
         .add_attribute("action", "trade and join in a pool")
-        .add_message(swap_msg),
+        .add_message(join_swap_extern_amount_in_msg),
     )
         // .add_submessage(SubMsg::reply_on_success(swap_msg, SWAP_REPLY_ID)))
+}
+
+pub fn execute_exit_swap_share(
+    deps: DepsMut,
+    env: Env,
+    info: MessageInfo,
+    pool_id: u64,
+    token_out_denom: String,
+    share_in_amount: String,
+    token_out_min_amount: String,
+) -> Result<Response, ContractError> {
+    let exit_swap_share_amount_in_msg = generate_exit_swap_share_amount_in(
+        env.contract.address,
+        pool_id,
+        token_out_denom,
+        share_in_amount,
+        token_out_min_amount,
+    )?;
+
+    Ok(Response::new()
+        .add_attribute("action", "exit_swap_share_amount_in")
+        .add_message(exit_swap_share_amount_in_msg)
+        )   
 }

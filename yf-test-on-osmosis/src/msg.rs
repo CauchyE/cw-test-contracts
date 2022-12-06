@@ -26,12 +26,12 @@ pub enum ExecuteMsg {
     },
     // let the contract send a MsgExitSwapExternAmountOut to exit a single
     // token from a pool with one msg
-    // ExitSwapShare {
-        // pool_id: u64,
-        // token_out_denom: String,
-        // share_in_amount: String,
-        // token-out-min-amount: String,
-    // }
+    ExitSwapShare {
+        pool_id: u64,
+        token_out_denom: String,
+        share_in_amount: String,
+        token_out_min_amount: String,
+    }
 
     // Deposit {
     //     pool: Uint64,

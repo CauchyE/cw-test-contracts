@@ -1,20 +1,16 @@
-use std::ops::{Div, Mul};
-
 use cosmwasm_std::{Addr, Coin, Decimal, Deps, Timestamp, Uint128};
 use osmosis_std::shim::Timestamp as OsmosisTimestamp;
 use osmosis_std::types::osmosis::gamm::v1beta1::{
-    MsgSwapExactAmountIn, QueryTotalPoolLiquidityRequest, SwapAmountInRoute, MsgJoinSwapExternAmountIn,
+    MsgExitSwapShareAmountIn, QueryTotalPoolLiquidityRequest, SwapAmountInRoute, MsgJoinSwapExternAmountIn,
 };
 use osmosis_std::types::osmosis::twap::v1beta1::TwapQuerier;
 
 use crate::{
-    state::{ROUTING_TABLE},
-
     error::ContractError,
 };
 
 pub fn generate_join_swap_extern_msg(
-    deps: Deps,
+    // deps: Deps,
     sender: Addr,
     pool_id: u64,
     token_in: Coin,
@@ -22,13 +18,31 @@ pub fn generate_join_swap_extern_msg(
 ) -> Result<MsgJoinSwapExternAmountIn, ContractError> {
     // get trade route
     dbg!("generating");
-    // let route = ROUTING_TABLE.load(deps.storage, (&input_token.denom, &min_output_token.denom))?;
-    // dbg!(route.clone());
+    
     Ok(MsgJoinSwapExternAmountIn {
         sender: sender.into_string(),
         pool_id: pool_id,
         token_in: Some(token_in.into()),
-        share_out_min_amount: share_out_min_amount.clone(),
+        share_out_min_amount: share_out_min_amount,
+    })
+}
+
+pub fn generate_exit_swap_share_amount_in(
+    // deps: Deps,
+    sender: Addr,
+    pool_id: u64,
+    token_out_denom: String,
+    share_amount_in: String,
+    token_out_min_amount: String,
+) -> Result<MsgExitSwapShareAmountIn, ContractError> {
+    dbg!("generating");
+
+    Ok(MsgExitSwapShareAmountIn{
+        sender: sender.into(),
+        pool_id: pool_id,
+        token_out_denom: token_out_denom,
+        share_in_amount: share_amount_in,
+        token_out_min_amount: token_out_min_amount,
     })
 }
 

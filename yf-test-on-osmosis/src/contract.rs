@@ -6,7 +6,7 @@ use cosmwasm_std::{
 use cw2::set_contract_version;
 
 use crate::error::ContractError;
-use crate::execute::{execute_join_swap_extern};
+use crate::execute::{execute_join_swap_extern, execute_exit_swap_share};
 use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg};
 // use crate::query::{query_owner, query_route, test_twap};
 // use crate::state::{State, STATE, SWAP_REPLY_STATES};
@@ -46,6 +46,12 @@ pub fn execute(
             share_our_min_amount,
             // slipage,
         } => execute_join_swap_extern(deps, env, info, pool_id, token_in, share_our_min_amount),
+        ExecuteMsg::ExitSwapShare {
+            pool_id,
+            token_out_denom,
+            share_in_amount,
+            token_out_min_amount,
+        } => execute_exit_swap_share(deps, env, info, pool_id, token_out_denom, share_in_amount, token_out_min_amount),
     }
 }
 
