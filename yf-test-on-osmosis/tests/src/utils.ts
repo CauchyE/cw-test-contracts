@@ -5,7 +5,7 @@ import { AckWithMetadata, CosmWasmSigner, RelayInfo, testutils } from "@confio/r
 // import { assert } from "@cosmjs/utils";
 
 const { fundAccount, generateMnemonic, osmosis: oldOsmo, signingCosmWasmClient } = testutils;
-const osmosis = { ...oldOsmo, minFee: "0.025uosmo" };
+const osmosis = { ...oldOsmo, minFee: "0uosmo" };
 
 export async function setupContracts(
   cosmwasm: CosmWasmSigner,
@@ -29,7 +29,7 @@ export async function setupContracts(
 export async function setupOsmosisClient(): Promise<CosmWasmSigner> {
   // create apps and fund an account
   const mnemonic = generateMnemonic();
-  const cosmwasm = await signingCosmWasmClient(osmosis, mnemonic);
-  await fundAccount(osmosis, cosmwasm.senderAddress, "4000000");
-  return cosmwasm;
+  const osmosisSigner = await signingCosmWasmClient(osmosis, mnemonic);
+  await fundAccount(osmosis, osmosisSigner.senderAddress, "4000000");
+  return osmosisSigner;
 }

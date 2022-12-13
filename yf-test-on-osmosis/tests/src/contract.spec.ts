@@ -27,3 +27,32 @@ test.before(async (t) => {
 
   t.pass();
 });
+
+interface SetupInfo {
+  osmoClient: CosmWasmSigner;
+  // osmoContract: string;
+}
+
+async function demoSetup(): Promise<SetupInfo> {
+  // instantiate ica host on osmosis
+  const osmoClient = await setupOsmosisClient();
+  // const initHost = {};
+  // const { contractAddress: osmoContract } = await osmoClient.sign.instantiate(
+  //   osmoClient.senderAddress,
+  //   osmosisIds.host,
+  //   initHost,
+  //   "simple ",
+  //   "auto"
+  // );
+  
+  return {
+      osmoClient,
+      // osmoContract,
+  };
+}
+
+test.serial("connect account and send tokens over", async (t) => {
+  const { osmoClient, /*osmoContract*/ } = await demoSetup();
+
+  t.log(osmoClient);
+});

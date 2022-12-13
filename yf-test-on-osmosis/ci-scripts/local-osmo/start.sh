@@ -4,23 +4,26 @@ set -e
 killall osmosisd || true
 rm -rf $HOME/.osmosisd/
 
-source ./env
+source ../ci-scripts/local-osmo/env
 
 mkdir $HOME/.osmosisd
 mkdir $HOME/.osmosisd/validator1
 
 osmosisd init --chain-id=$CHAIN_ID validator1 --home=$HOME/.osmosisd/validator1
 osmosisd keys add validator1 --keyring-backend=test --home=$HOME/.osmosisd/validator1
+osmosisd keys add faucet --recover < ../ci-scripts/local-osmo/faucet --keyring-backend=test --home=$HOME/.osmosisd/validator1
 
 update_genesis () {    
     cat $HOME/.osmosisd/validator1/config/genesis.json | jq "$1" > $HOME/.osmosisd/validator1/config/tmp_genesis.json && mv $HOME/.osmosisd/validator1/config/tmp_genesis.json $HOME/.osmosisd/validator1/config/genesis.json
 }
+sed -i -o 's/stake/uosmo/g' $HOME/.osmosisd/validator1/config/genesis.json
 
 # change staking denom to uosmo
 update_genesis '.app_state["staking"]["params"]["bond_denom"]="uosmo"'
 
 # create validator node with tokens to transfer to the three other nodes
 osmosisd add-genesis-account $(osmosisd keys show validator1 -a --keyring-backend=test --home=$HOME/.osmosisd/validator1) 100000000000uosmo,100000000000stake --home=$HOME/.osmosisd/validator1
+osmosisd add-genesis-account $(osmosisd keys show faucet -a --keyring-backend=test --home=$HOME/.osmosisd/validator1) 100000000000uosmo --home=$HOME/.osmosisd/validator1
 osmosisd gentx validator1 500000000uosmo --keyring-backend=test --home=$HOME/.osmosisd/validator1 --chain-id=$CHAIN_ID
 osmosisd collect-gentxs --home=$HOME/.osmosisd/validator1
 
@@ -61,9 +64,9 @@ update_genesis '.app_state["gamm"]["params"]["pool_creation_fee"][0]["denom"]="u
 VALIDATOR1_CONFIG=$HOME/.osmosisd/validator1/config/config.toml
 sed -i -E 's|tcp://127.0.0.1:26657|tcp://127.0.0.1:26653|g' $VALIDATOR1_CONFIG
 
-tmux new -s validator1 -d osmosisd start --home=$HOME/.osmosisd/validator1
+tmux new -s validator1 -d osmosisd start --home=$HOME/.osmosisd/validator1 --minimum-gas-prices=0uosmo
 
 sleep 7
 
 echo "creating a pool using stake-uosmo.json"
-./pool-creation.sh
+../ci-scripts/local-osmo/pool-creation.sh

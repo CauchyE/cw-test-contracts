@@ -13,15 +13,15 @@ set -e
 # 	"future-governor": "168h"
 # }
 
-source ./env
+source ../ci-scripts/local-osmo/env
 
 # create pool
-osmosisd tx gamm create-pool --pool-file=./stake-uosmo.json --from=validator1 --keyring-backend=test --chain-id=$CHAIN_ID --yes --home=$HOME/.osmosisd/validator1 --node=$NODE
+osmosisd tx gamm create-pool --pool-file=../ci-scripts/local-osmo/stake-uosmo.json --from=validator1 --keyring-backend=test --chain-id=$CHAIN_ID --yes --home=$HOME/.osmosisd/validator1 --node=$NODE
 sleep 7
 
 # test swap in pool created
-osmosisd tx gamm swap-exact-amount-in 1uosmo 50000 --swap-route-pool-ids=1 --swap-route-denoms=stake --from=validator1 --keyring-backend=test --chain-id=$CHAIN_ID --yes --home=$HOME/.osmosisd/validator1 --node $NODE
-sleep 7
+# osmosisd tx gamm swap-exact-amount-in 1uosmo 50000 --swap-route-pool-ids=1 --swap-route-denoms=stake --from=validator1 --keyring-backend=test --chain-id=$CHAIN_ID --yes --home=$HOME/.osmosisd/validator1 --node $NODE
+# sleep 7
 
 # create a lock up with lockable duration 360h
 # osmosisd tx lockup lock-tokens 10000000000000000000gamm/pool/1 --duration=360h --from=validator1 --keyring-backend=test --chain-id=$CHAIN_ID --broadcast-mode=block --yes --home=$HOME/.osmosisd/validator1 --node $NODE
