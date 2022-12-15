@@ -6,26 +6,25 @@ rm -rf $HOME/.osmosisd/
 
 source ../ci-scripts/local-osmo/env
 
-mkdir $HOME/.osmosisd
-mkdir $HOME/.osmosisd/validator1
+mkdir -p $OSMO_HOME
 
-osmosisd init --chain-id=$CHAIN_ID validator1 --home=$HOME/.osmosisd/validator1
-osmosisd keys add validator1 --keyring-backend=test --home=$HOME/.osmosisd/validator1
-osmosisd keys add faucet --recover < ../ci-scripts/local-osmo/faucet --keyring-backend=test --home=$HOME/.osmosisd/validator1
+osmosisd init --chain-id=$CHAIN_ID validator1 --home=$OSMO_HOME
+osmosisd keys add validator1 --keyring-backend=test --home=$OSMO_HOME
+osmosisd keys add faucet --recover < $RELATIVE_SCRIPT_PATH_FROM_TEST/faucet --keyring-backend=test --home=$OSMO_HOME
 
 update_genesis () {    
-    cat $HOME/.osmosisd/validator1/config/genesis.json | jq "$1" > $HOME/.osmosisd/validator1/config/tmp_genesis.json && mv $HOME/.osmosisd/validator1/config/tmp_genesis.json $HOME/.osmosisd/validator1/config/genesis.json
+    cat $OSMO_HOME/config/genesis.json | jq "$1" > $OSMO_HOME/config/tmp_genesis.json && mv $OSMO_HOME/config/tmp_genesis.json $OSMO_HOME/config/genesis.json
 }
-sed -i -o 's/stake/uosmo/g' $HOME/.osmosisd/validator1/config/genesis.json
+sed -i -o 's/stake/uosmo/g' $OSMO_HOME/config/genesis.json
 
 # change staking denom to uosmo
 update_genesis '.app_state["staking"]["params"]["bond_denom"]="uosmo"'
 
 # create validator node with tokens to transfer to the three other nodes
-osmosisd add-genesis-account $(osmosisd keys show validator1 -a --keyring-backend=test --home=$HOME/.osmosisd/validator1) 100000000000uosmo,100000000000stake --home=$HOME/.osmosisd/validator1
-osmosisd add-genesis-account $(osmosisd keys show faucet -a --keyring-backend=test --home=$HOME/.osmosisd/validator1) 100000000000uosmo --home=$HOME/.osmosisd/validator1
-osmosisd gentx validator1 500000000uosmo --keyring-backend=test --home=$HOME/.osmosisd/validator1 --chain-id=$CHAIN_ID
-osmosisd collect-gentxs --home=$HOME/.osmosisd/validator1
+osmosisd add-genesis-account $(osmosisd keys show validator1 -a --keyring-backend=test --home=$OSMO_HOME) 100000000000uosmo,100000000000stake --home=$OSMO_HOME
+osmosisd add-genesis-account $(osmosisd keys show faucet -a --keyring-backend=test --home=$OSMO_HOME) 100000000000uosmo --home=$OSMO_HOME
+osmosisd gentx validator1 500000000uosmo --keyring-backend=test --home=$OSMO_HOME --chain-id=$CHAIN_ID
+osmosisd collect-gentxs --home=$OSMO_HOME
 
 
 # update staking genesis
@@ -61,12 +60,12 @@ update_genesis '.app_state["mint"]["params"]["epoch_identifier"]="day"'
 # update gamm genesis
 update_genesis '.app_state["gamm"]["params"]["pool_creation_fee"][0]["denom"]="uosmo"'
 
-VALIDATOR1_CONFIG=$HOME/.osmosisd/validator1/config/config.toml
+VALIDATOR1_CONFIG=$OSMO_HOME/config/config.toml
 sed -i -E 's|tcp://127.0.0.1:26657|tcp://127.0.0.1:26653|g' $VALIDATOR1_CONFIG
 
-tmux new -s validator1 -d osmosisd start --home=$HOME/.osmosisd/validator1 --minimum-gas-prices=0uosmo
+tmux new -s validator1 -d osmosisd start --home=$OSMO_HOME --minimum-gas-prices=0uosmo
 
 sleep 7
 
 echo "creating a pool using stake-uosmo.json"
-../ci-scripts/local-osmo/pool-creation.sh
+$RELATIVE_SCRIPT_PATH_FROM_TEST/pool-creation.sh
