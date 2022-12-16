@@ -1,4 +1,4 @@
-use cosmwasm_std::{Coin, Decimal, Uint128, Uint64};
+use cosmwasm_std::{Coin, Decimal, Uint128, Uint64, Addr};
 // use osmosis_std::types::osmosis::gamm::v1beta1::SwapAmountInRoute;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -21,7 +21,7 @@ pub enum ExecuteMsg {
     JoinSwapExtern {
         pool_id: u64,
         token_in: Coin,
-        share_our_min_amount: String,
+        share_out_min_amount: String,
         // slipage: Slipage,
     },
     // let the contract send a MsgExitSwapExternAmountOut to exit a single

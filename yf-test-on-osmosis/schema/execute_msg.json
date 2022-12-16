@@ -12,7 +12,7 @@
           "type": "object",
           "required": [
             "pool_id",
-            "share_our_min_amount",
+            "share_out_min_amount",
             "token_in"
           ],
           "properties": {
@@ -21,7 +21,7 @@
               "format": "uint64",
               "minimum": 0.0
             },
-            "share_our_min_amount": {
+            "share_out_min_amount": {
               "type": "string"
             },
             "token_in": {
