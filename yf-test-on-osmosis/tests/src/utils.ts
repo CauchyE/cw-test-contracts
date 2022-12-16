@@ -5,9 +5,9 @@ import { AckWithMetadata, CosmWasmSigner, RelayInfo, testutils } from "@confio/r
 // import { assert } from "@cosmjs/utils";
 
 const { fundAccount, generateMnemonic, osmosis: oldOsmo, signingCosmWasmClient } = testutils;
-const osmosis = { ...oldOsmo, minFee: "0uosmo" };
+const osmosis = { ...oldOsmo, minFee: "0.025uosmo" };
 
-export async function setupContracts(
+export async function setupContract(
   cosmwasm: CosmWasmSigner,
   contracts: Record<string, string>
 ): Promise<Record<string, number>> {
