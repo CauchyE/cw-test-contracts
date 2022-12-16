@@ -7,7 +7,7 @@
 export type ExecuteMsg = {
   join_swap_extern: {
     pool_id: number;
-    share_our_min_amount: string;
+    share_out_min_amount: string;
     token_in: Coin;
     [k: string]: unknown;
   };

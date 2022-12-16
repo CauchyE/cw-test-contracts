@@ -65,7 +65,7 @@ sed -i -E 's|tcp://127.0.0.1:26657|tcp://127.0.0.1:26653|g' $VALIDATOR1_CONFIG
 
 tmux new -s validator1 -d osmosisd start --home=$OSMO_HOME --minimum-gas-prices=0uosmo
 
-sleep 7
+sleep 5
 
 echo "creating a pool using stake-uosmo.json"
 $RELATIVE_SCRIPT_PATH_FROM_TEST/pool-creation.sh

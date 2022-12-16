@@ -2,9 +2,9 @@ import { CosmWasmSigner, Link, testutils } from "@confio/relayer";
 import { assert } from "@cosmjs/utils";
 import test from "ava";
 // import { Order } from "cosmjs-types/ibc/core/channel/v1/channel";
-import "./types/yfTestOnOsmosis.types";
+import {ExecuteMsg, Coin } from "./types/yfTestOnOsmosis.types";
 const { osmosis: oldOsmo, setup, randomAddress } = testutils;
-const osmosis = { ...oldOsmo, minFee: "0.025uosmo" };
+const osmosis = { ...oldOsmo, minFee: "0uosmo" };
 
 import {
   setupContract,
@@ -17,7 +17,6 @@ test.before(async (t) => {
   console.log("test before for creating osmo client with local osmo setup")
   console.debug("Upload contracts to osmosis...");
   const osmosisContract = {
-    // this is used in m1
     yf_test: "../artifacts/yf_test_on_osmosis-aarch64.wasm",
   };
   const osmosisSigner = await setupOsmosisClient();
@@ -52,6 +51,17 @@ async function demoSetup(): Promise<SetupInfo> {
 test.serial("execute join_swap_extern msg", async (t) => {
   const { osmoClient, osmoContract } = await demoSetup();
 
-  console.log(osmoContract)
-  t.log(osmoClient);
+  let senderBalanceBefore = await osmoClient.sign.getBalance(osmoClient.senderAddress, "uosmo");
+  console.log("before msg" , senderBalanceBefore)
+
+  const poolId = 1;
+  const swapCoin: Coin = { amount: "10", denom: "uosmo" };
+  const joinSwapExternMsg: ExecuteMsg = { join_swap_extern: { pool_id: poolId, share_out_min_amount: "1", token_in: swapCoin } };
+  await osmoClient.sign.execute(osmoClient.senderAddress, osmoContract, joinSwapExternMsg, "auto", "", [swapCoin]);
+
+  let senderBalanceAfter = await osmoClient.sign.getBalance(osmoClient.senderAddress, "uosmo");
+  console.log("after msg", senderBalanceAfter)
+  
+  t.assert(senderBalanceAfter < senderBalanceBefore)
+  t.log(osmoClient, osmoContract);
 });
