@@ -52,16 +52,14 @@ test.serial("execute join_swap_extern msg", async (t) => {
   const { osmoClient, osmoContract } = await demoSetup();
 
   let senderBalanceBefore = await osmoClient.sign.getBalance(osmoClient.senderAddress, "uosmo");
-  console.log("before msg" , senderBalanceBefore)
-
+  
   const poolId = 1;
   const swapCoin: Coin = { amount: "10", denom: "uosmo" };
   const joinSwapExternMsg: ExecuteMsg = { join_swap_extern: { pool_id: poolId, share_out_min_amount: "1", token_in: swapCoin } };
   await osmoClient.sign.execute(osmoClient.senderAddress, osmoContract, joinSwapExternMsg, "auto", "", [swapCoin]);
 
   let senderBalanceAfter = await osmoClient.sign.getBalance(osmoClient.senderAddress, "uosmo");
-  console.log("after msg", senderBalanceAfter)
-  
-  t.assert(senderBalanceAfter < senderBalanceBefore)
+    
+  t.assert(senderBalanceAfter.amount < senderBalanceBefore.amount)
   t.log(osmoClient, osmoContract);
 });
