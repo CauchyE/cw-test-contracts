@@ -16,7 +16,8 @@ const CONTRACT_NAME: &str = "crates.io:yf-test-on-osmosis";
 const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
 
 // Msg Reply IDs
-pub const SWAP_REPLY_ID: u64 = 1u64;
+pub const JOIN_SWAP_REPLY_ID: u64 = 1u64;
+pub const EXIT_SWAP_REPLY_ID: u64 = 2u64;
 
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn instantiate(
@@ -43,9 +44,9 @@ pub fn execute(
         ExecuteMsg::JoinSwapExtern {
             pool_id,
             token_in,
-            share_our_min_amount,
+            share_out_min_amount,
             // slipage,
-        } => execute_join_swap_extern(deps, env, info, pool_id, token_in, share_our_min_amount),
+        } => execute_join_swap_extern(deps, env, info, pool_id, token_in, share_out_min_amount),
         ExecuteMsg::ExitSwapShare {
             pool_id,
             token_out_denom,
@@ -59,5 +60,17 @@ pub fn execute(
 // pub fn query(deps: Deps, env: Env, msg: QueryMsg) -> StdResult<Binary> {
 //     // match msg {
 //     // }
+// }
+
+// TODO: implement actual logic for both join_swap and exit_swap reply cases
+// #[cfg_attr(not(feature = "library"), entry_point)]
+// pub fn reply(deps: DepsMut, _env: Env, msg: Reply) -> Result<Response, ContractError> {
+//     if msg.id == JOIN_SWAP_REPLY_ID {
+//         handle_join_swap_reply(deps, msg)
+//     } else if msg.id == EXIT_SWAP_REPLY_ID {
+//         handle_exit_swap_reply(deps, msg)
+//     } else {
+//         Ok(Response::new())
+//     }
 // }
 

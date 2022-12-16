@@ -1,4 +1,4 @@
-use cosmwasm_std::StdError;
+use cosmwasm_std::{StdError, Coin};
 use thiserror::Error;
 
 #[derive(Error, Debug)]
@@ -7,7 +7,7 @@ pub enum ContractError {
     Std(#[from] StdError),
 
     #[error("Insufficient Funds")]
-    InsufficientFunds {},
+    InsufficientFunds {coins: Vec<Coin>},
 
     #[error("Invalid Pool Route: {reason:?}")]
     InvalidPoolRoute { reason: String },

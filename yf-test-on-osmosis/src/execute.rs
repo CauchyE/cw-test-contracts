@@ -3,7 +3,7 @@ use crate::state::{};
 use cosmwasm_std::entry_point;
 use cosmwasm_std::{
     attr, coin, to_binary, has_coins, Addr, BankMsg, Binary, Coin, CosmosMsg, Deps, DepsMut, Env, IbcMsg,
-    IbcQuery, MessageInfo, Order, PortIdResponse, Response, StdResult, Storage, Uint128, WasmMsg, Uint64,
+    IbcQuery, MessageInfo, Order, PortIdResponse, Response, StdResult, Storage, Uint128, WasmMsg, Uint64, Reply,
 };
 
 // use crate::contract::SWAP_REPLY_ID;
@@ -24,7 +24,7 @@ pub fn execute_join_swap_extern(
 ) -> Result<Response, ContractError> {
     // check if user send enough fund in a tx to swap and join in a pool
     if !has_coins(&info.funds, &token_in) {
-        return Err(ContractError::InsufficientFunds {});
+        return Err(ContractError::InsufficientFunds {coins: info.funds});
     }
 
     // generate the join_swap_extern_amount_in_msg
@@ -63,5 +63,20 @@ pub fn execute_exit_swap_share(
     Ok(Response::new()
         .add_attribute("action", "exit_swap_share_amount_in")
         .add_message(exit_swap_share_amount_in_msg)
-        )   
+    )   
 }
+
+
+// pub fn handle_join_swap_reply(
+//     _deps: DepsMut,
+//     msg: Reply,
+// ) -> Result<Response, ContractError> {
+//     Ok(Response::new())
+// }
+
+// pub fn handle_exit_swap_reply(
+//     _deps: DepsMut,
+//     msg: Reply,
+// ) -> Result<Response, ContractError> {
+//     Ok(Response::new())
+// }
