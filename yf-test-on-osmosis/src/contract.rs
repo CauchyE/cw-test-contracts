@@ -6,8 +6,9 @@ use cosmwasm_std::{
 use cw2::set_contract_version;
 
 use crate::error::ContractError;
-use crate::execute::{execute_join_swap_extern, execute_exit_swap_share};
+use crate::execute::{execute_join_swap_extern, execute_exit_swap_share, handle_join_swap_reply};
 use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg};
+use crate::state::SWAP_REPLY_STATES;
 // use crate::query::{query_owner, query_route, test_twap};
 // use crate::state::{State, STATE, SWAP_REPLY_STATES};
 
@@ -45,7 +46,6 @@ pub fn execute(
             pool_id,
             token_in,
             share_out_min_amount,
-            // slipage,
         } => execute_join_swap_extern(deps, env, info, pool_id, token_in, share_out_min_amount),
         ExecuteMsg::ExitSwapShare {
             pool_id,
@@ -63,14 +63,22 @@ pub fn execute(
 // }
 
 // TODO: implement actual logic for both join_swap and exit_swap reply cases
-// #[cfg_attr(not(feature = "library"), entry_point)]
-// pub fn reply(deps: DepsMut, _env: Env, msg: Reply) -> Result<Response, ContractError> {
-//     if msg.id == JOIN_SWAP_REPLY_ID {
-//         handle_join_swap_reply(deps, msg)
-//     } else if msg.id == EXIT_SWAP_REPLY_ID {
-//         handle_exit_swap_reply(deps, msg)
-//     } else {
-//         Ok(Response::new())
-//     }
-// }
+#[cfg_attr(not(feature = "library"), entry_point)]
+pub fn reply(deps: DepsMut, _env: Env, msg: Reply) -> Result<Response, ContractError> {
+    if msg.id == JOIN_SWAP_REPLY_ID {
+        // get intermediate swap reply state. Error if not found.
+        let swap_msg_reply_state = SWAP_REPLY_STATES.load(deps.storage, msg.id)?;
+
+        // prune intermedate state since it's no longer necessary
+        SWAP_REPLY_STATES.remove(deps.storage, msg.id);
+
+        handle_join_swap_reply(deps, msg, swap_msg_reply_state)
+    } 
+    // else if msg.id == EXIT_SWAP_REPLY_ID {
+      // handle_exit_swap_reply(deps, msg)
+    // } 
+    else {
+        Ok(Response::new())
+    }
+}
 
