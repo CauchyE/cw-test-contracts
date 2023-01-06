@@ -1,4 +1,7 @@
 #!/bin/bash
+
+## execute under tests folder
+
 set -e
 
 killall osmosisd || true
@@ -63,9 +66,10 @@ update_genesis '.app_state["gamm"]["params"]["pool_creation_fee"][0]["denom"]="u
 VALIDATOR1_CONFIG=$OSMO_HOME/config/config.toml
 sed -i -E 's|tcp://127.0.0.1:26657|tcp://127.0.0.1:26653|g' $VALIDATOR1_CONFIG
 
-tmux new -s validator1 -d osmosisd start --home=$OSMO_HOME --minimum-gas-prices=0uosmo
+# tmux new -s validator1 -d 
+osmosisd start --home=$OSMO_HOME --minimum-gas-prices=0uosmo
 
-sleep 5
+# sleep 5
 
-echo "creating a pool using stake-uosmo.json"
-$RELATIVE_SCRIPT_PATH_FROM_TEST/pool-creation.sh
+# echo "creating a pool using stake-uosmo.json"
+# $RELATIVE_SCRIPT_PATH_FROM_TEST/pool-creation.sh
