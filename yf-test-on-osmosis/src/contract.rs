@@ -6,10 +6,10 @@ use cosmwasm_std::{
 use cw2::set_contract_version;
 
 use crate::error::ContractError;
-use crate::execute::{execute_join_swap_extern, execute_exit_swap_share, handle_join_swap_reply};
+use crate::execute::{execute_exit_swap_share, execute_join_swap_extern, handle_join_swap_reply};
 use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg};
+use crate::query::query_depositor_share_amount;
 use crate::state::SWAP_REPLY_STATES;
-// use crate::query::{query_owner, query_route, test_twap};
 // use crate::state::{State, STATE, SWAP_REPLY_STATES};
 
 // version info for migration info
@@ -52,15 +52,26 @@ pub fn execute(
             token_out_denom,
             share_in_amount,
             token_out_min_amount,
-        } => execute_exit_swap_share(deps, env, info, pool_id, token_out_denom, share_in_amount, token_out_min_amount),
+        } => execute_exit_swap_share(
+            deps,
+            env,
+            info,
+            pool_id,
+            token_out_denom,
+            share_in_amount,
+            token_out_min_amount,
+        ),
     }
 }
 
-// #[cfg_attr(not(feature = "library"), entry_point)]
-// pub fn query(deps: Deps, env: Env, msg: QueryMsg) -> StdResult<Binary> {
-//     // match msg {
-//     // }
-// }
+#[cfg_attr(not(feature = "library"), entry_point)]
+pub fn query(deps: Deps, env: Env, msg: QueryMsg) -> StdResult<Binary> {
+    match msg {
+        QueryMsg::DepositorShareAmount { depositor } => {
+            to_binary(&query_depositor_share_amount(deps, &depositor)?)
+        }
+    }
+}
 
 // TODO: implement actual logic for both join_swap and exit_swap reply cases
 #[cfg_attr(not(feature = "library"), entry_point)]
@@ -73,12 +84,11 @@ pub fn reply(deps: DepsMut, _env: Env, msg: Reply) -> Result<Response, ContractE
         SWAP_REPLY_STATES.remove(deps.storage, msg.id);
 
         handle_join_swap_reply(deps, msg, swap_msg_reply_state)
-    } 
+    }
     // else if msg.id == EXIT_SWAP_REPLY_ID {
-      // handle_exit_swap_reply(deps, msg)
-    // } 
+    // handle_exit_swap_reply(deps, msg)
+    // }
     else {
         Ok(Response::new())
     }
 }
-

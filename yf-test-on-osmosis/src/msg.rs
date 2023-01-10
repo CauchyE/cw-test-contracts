@@ -4,14 +4,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
-pub struct InstantiateMsg { }
-
-// #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
-// #[serde(rename_all = "snake_case")]
-// pub enum Slipage {
-//     MaxSlipagePercentage(Decimal),
-//     MinOutputAmount(Uint128),
-// }
+pub struct InstantiateMsg {}
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 #[serde(rename_all = "snake_case")]
@@ -30,23 +23,19 @@ pub enum ExecuteMsg {
         token_out_denom: String,
         share_in_amount: String,
         token_out_min_amount: String,
-    }
-
-    // Lockup {
-    //     timeout: Option<u64>,
-    //     duration: Uint64,
-    // }
+    }, // Lockup {
+       //     timeout: Option<u64>,
+       //     duration: Uint64,
+       // }
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum QueryMsg {
-    DepositerShareAmount {
-        depositor: String,
-    },
+    DepositorShareAmount { depositor: String },
 }
 
- #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
-pub struct DepositerShareAmount {
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
+pub struct GetDepositorShareAmountResponse {
     pub share_amount: String,
 }
