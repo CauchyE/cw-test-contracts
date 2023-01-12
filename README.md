@@ -1,1 +1,1 @@
-# cw-test-contracts
+# [deprecated] cw-test-contracts
