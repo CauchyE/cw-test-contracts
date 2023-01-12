@@ -54,9 +54,8 @@ pub fn execute_join_swap_extern(
         .add_submessage(SubMsg::reply_on_success(
             join_swap_extern_amount_in_msg,
             JOIN_SWAP_REPLY_ID,
-        )))
-
-    // .add_submessage(SubMsg::reply_on_success(swap_msg, SWAP_REPLY_ID)))
+        ))
+    )
 }
 
 pub fn execute_exit_swap_share(
@@ -89,16 +88,18 @@ pub fn handle_join_swap_reply(
     if let SubMsgResult::Ok(SubMsgResponse { data: Some(b), .. }) = msg.result {
         let res: MsgSwapExactAmountInResponse = b.try_into().map_err(ContractError::Std)?;
 
+        // TODO: better form
         // record share out amount with the original sender for the proper retrieve
-        DEPOSITOR_SHARE.save(
-            deps.storage,
-            swap_msg_reply_state.original_sender.clone(),
-            &res.token_out_amount,
-        )?;
+        let added_share: Uint128 = res.token_out_amount.parse().unwrap();
+        DEPOSITOR_SHARE.update(deps.storage, &swap_msg_reply_state.original_sender, |share| -> StdResult<_> {
+            let share = share.unwrap_or_default();
+                        
+            Ok(share + added_share)
+        })?;
 
         return Ok(Response::new()
             .add_attribute("original_sender", &swap_msg_reply_state.original_sender)
-            .add_attribute("share_out_amount", &res.token_out_amount));
+            .add_attribute("share_out_amount", res.token_out_amount));
     }
 
     Err(ContractError::FailedSwapJoin {

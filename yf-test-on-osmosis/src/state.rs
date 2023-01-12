@@ -2,7 +2,7 @@
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use cosmwasm_std::Addr;
+use cosmwasm_std::{Addr, Uint128};
 use cw_storage_plus::Map;
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
@@ -10,5 +10,6 @@ pub struct SwapMsgReplyState {
     pub original_sender: Addr,
 }
 
-pub const DEPOSITOR_SHARE: Map<Addr, String> = Map::new("depositor_share");
+// TODO: better struct
+pub const DEPOSITOR_SHARE: Map<&Addr, Uint128> = Map::new("depositor_share");
 pub const SWAP_REPLY_STATES: Map<u64, SwapMsgReplyState> = Map::new("swap_reply_states");

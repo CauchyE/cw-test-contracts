@@ -1,4 +1,4 @@
-use cosmwasm_std::Coin;
+use cosmwasm_std::{Coin, Uint128};
 // use osmosis_std::types::osmosis::gamm::v1beta1::SwapAmountInRoute;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -37,5 +37,5 @@ pub enum QueryMsg {
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 pub struct GetDepositorShareAmountResponse {
-    pub share_amount: String,
+    pub share_amount: Uint128,
 }
