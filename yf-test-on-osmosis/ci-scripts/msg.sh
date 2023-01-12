@@ -13,6 +13,16 @@ EXECUTE_JOIN_SWAP_MSG='{"join_swap_extern" : {"pool_id":1, "token_in": {"denom":
 osmosisd tx wasm execute $CONTRACT_ADDR "$EXECUTE_JOIN_SWAP_MSG" --from validator1 $TXFLAG -y \
     --amount 10uosmo 
 
+# query for the share amount of the depositor
 DEPOSITOR=$(osmosisd keys show -a validator1 --keyring-backend=test --home $HOME/.osmosisd/validator1)
 EXECUTE_DEPOSITOR_SHARE_QUERY='{"depositor_share_amount": {"depositor": "'$DEPOSITOR'"}}'
 osmosisd q wasm contract-state smart $CONTRACT_ADDR "$EXECUTE_DEPOSITOR_SHARE_QUERY" $QFLAG
+
+# query for the pool assets
+osmosisd q gamm pool 1 $QFLAG
+
+osmosisd q poolincentives gauge-ids 1  $QFLAG
+
+osmosisd q incentives gauge-by-id 1 $QFLAG
+
+osmosisd q incentives to-distribute-coins $QFLAG
